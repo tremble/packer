@@ -47,16 +47,6 @@ func (c *AMIConfig) Prepare(accessConfig *AccessConfig, ctx *interpolate.Context
 		errs = append(errs, fmt.Errorf("ami_name must be specified"))
 	}
 
-	// Make sure that if we have region_kms_key_ids defined,
-	//  the regions in region_kms_key_ids are also in ami_regions
-	if len(c.AMIRegionKMSKeyIDs) > 0 {
-		for kmsKeyRegion := range c.AMIRegionKMSKeyIDs {
-			if !stringInSlice(c.AMIRegions, kmsKeyRegion) {
-				errs = append(errs, fmt.Errorf("Region %s is in region_kms_key_ids but not in ami_regions", kmsKeyRegion))
-			}
-		}
-	}
-
 	ec2conn := getValidationSession()
 	errs = c.prepareRegions(ec2conn, accessConfig, errs)
 
